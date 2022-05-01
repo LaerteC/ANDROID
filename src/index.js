@@ -10,6 +10,7 @@ require('dotenv').config()
 
 const PORT = process.env.PORT || 3333
 
+
 const pool = new Pool({
     connectionString: process.env.POSTGRESQL_URL
 })
@@ -17,7 +18,7 @@ const app = express()
 
 app.use(express.json())
 
-app.user(cors())
+app.use(cors())
 
 
 
@@ -50,7 +51,6 @@ app.post('/adicionar', async(req, res) => {
         if (!user.rows[0]) {
             user = await pool.query('insert into usuario(nome,senha,tokens,contador) values ($1,$2,$3,$4) RETURNING *', [nome, senha, tokens, contador])
         }
-
 
         return res.status(200).send(user.rows)
     } catch (err) {
