@@ -116,9 +116,15 @@ app.get('/usuario/:senha', async(req, res) => {
     try {
 
         const retornaUsurio = await pool.query('select * from usuario where senha = ($1)', [senha])
-        if (!retornaUsurio.rows[0]) return res.status(400).send('Não tem esse usuário')
+        if (!retornaUsurio.rows[0]) {
+            return res.status(400).send('Não tem esse usuário')
+        } else {
+            const tokens = Math.floor(Math.random() * 100);
+            const retorno = await pool.query('update usuario set tokens=($1) where senha =($2)', [tokens, senha])
 
-        return res.status(200).send(retornaUsurio.rows)
+            return res.status(200).send(retornaUsurio.rows)
+        }
+
 
     } catch (err) {
 
