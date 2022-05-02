@@ -41,7 +41,7 @@ app.get('/usuarios', async(req, res) => {
 
 // Armazena usuario com os atributos : nome,senha,tokens,contador  da tabela USUARIO
 
-app.post('/adicionar', async(req, res) => {
+app.post('/adicionar/tudo', async(req, res) => {
     const { nome, senha, tokens, contador } = req.body
 
     let user = ''
@@ -103,14 +103,19 @@ app.post('/voto/:idcliente', async(req, res) => {
 
 //Pegar apenas um usuario da tabela USUARIO
 
-app.get('/usuario/:idcliente', async(req, res) => {
+app.post('/usuario/:senha', async(req, res) => {
 
-    const { idcliente } = req.params
+    const { senha } = req.params
 
     try {
 
-        const tudoUsuario = await pool.query('select * from usuario where idcliente=($1)', [idcliente])
-        return res.status(200).send(tudoUsuario.rows)
+        const retornaUsurio = await pool.query('select * from usuario where senha = ($1)', [senha])
+        if (!retornaUsurio.rows[0]) return res.status(400).send('Não tem esse usuário')
+
+        return res.status(200).send(retornaUsurio.rows)
+
+
+
     } catch (err) {
 
         return res.status(400).send(err)
@@ -119,13 +124,13 @@ app.get('/usuario/:idcliente', async(req, res) => {
 
 // Para armazenar o token e o voto =contador
 
-app.patch('/tokenvoto/:idcliente', async(req, res) => {
+app.patch('/tokenvoto/:idcliente/:tokens/:voto', async(req, res) => {
 
-    const { idcliente } = req.params
+    const { idcliente, tokens, voto } = req.params
     const data = req.body
 
     try {
-        const updateUsuario = await pool.query('update usuario set tokens=($1),contador=($2) where idcliente =($3) RETURNING *', [data.tokens, data.contador, idcliente])
+        const updateUsuario = await pool.query('update usuario set tokens=($1),contador=($2) where idcliente =($3) RETURNING *', [tokens, contador, idcliente])
 
         return res.status(400).send(updateUsuario.rows)
     } catch (err) {
