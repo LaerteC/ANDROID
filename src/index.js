@@ -6,6 +6,12 @@ const express = require('express')
 
 const { Pool } = require('pg')
 
+const jwt = require('jsonwebtoken')
+
+const SECRET = 'android';
+
+
+
 require('dotenv').config()
 
 const PORT = process.env.PORT || 3333
@@ -112,27 +118,36 @@ app.get('/usuario/:senha', async(req, res) => {
         const retornaUsurio = await pool.query('select * from usuario where senha = ($1)', [senha])
         if (!retornaUsurio.rows[0]) return res.status(400).send('Não tem esse usuário')
 
-        return res.status(200).send(retornaUsurio.rows)
+        const token = jwt.sign({ userId: 1, }, SECRET, { expiresIn: 15 })
+
+        return res.status(200).send(retornaUsurio.rows).json(token)
 
 
 
     } catch (err) {
 
-        return res.status(400).send(err)
+        return res.status(401).send(err)
     }
+})
+
+
+
+app.post('/logout', function(req, res) {
+
+    res.end();
 })
 
 // Para armazenar o token e o voto =contador
 
-app.patch('/tokenvoto/:idcliente/:tokens/:voto', async(req, res) => {
+app.put('/tokenvoto/:idcliente/', async(req, res) => {
 
-    const { idcliente, tokens, voto } = req.params
+    const { idcliente } = req.params
     const data = req.body
 
     try {
-        const updateUsuario = await pool.query('update usuario set tokens=($1),contador=($2) where idcliente =($3) RETURNING *', [tokens, contador, idcliente])
+        const updateUsuario = await pool.query('update usuario set tokens=($1) where idcliente =($2)', [data.tokens, idcliente])
 
-        return res.status(400).send(updateUsuario.rows)
+        return res.status(200).send(updateUsuario.rows)
     } catch (err) {
         return res.status(400).send(err)
     }
