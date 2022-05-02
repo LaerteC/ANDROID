@@ -134,6 +134,32 @@ app.get('/usuario/:senha', async(req, res) => {
 
 
 
+
+app.get('/usuarionome/:nome', async(req, res) => {
+
+    const { nome } = req.params
+
+    try {
+
+        const retornaUsurionome = await pool.query('select * from usuario where nome = ($1)', [nome])
+        if (!retornaUsurionome.rows[0]) {
+            return res.status(400).send('Não tem esse usuário')
+        } else {
+            const tokens = Math.floor(Math.random() * 100);
+            const retorno = await pool.query('update usuario set tokens=($1) where nome =($2)', [tokens, nome])
+
+            return res.status(200).send(retornaUsurionome.rows)
+        }
+
+
+    } catch (err) {
+
+        return res.status(401).send(err)
+    }
+})
+
+
+
 app.post('/logout', function(req, res) {
 
     res.end();
@@ -141,15 +167,16 @@ app.post('/logout', function(req, res) {
 
 // Para armazenar o token e o voto =contador
 
-app.put('/tokenvoto/:idcliente/', async(req, res) => {
+app.put('/voto/:nome', async(req, res) => {
 
-    const { idcliente } = req.params
+    const { nome } = req.params
     const data = req.body
 
     try {
-        const updateUsuario = await pool.query('update usuario set tokens=($1) where idcliente =($2)', [data.tokens, idcliente])
+        const updateUsuario = await pool.query('update usuario set contador=($1) where nome =($2)', [data.contador, nome])
 
         return res.status(200).send(updateUsuario.rows)
+
     } catch (err) {
         return res.status(400).send(err)
     }
