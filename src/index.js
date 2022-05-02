@@ -103,7 +103,7 @@ app.post('/voto/:idcliente', async(req, res) => {
 
 //Pegar apenas um usuario da tabela USUARIO
 
-app.post('/usuario/:senha', async(req, res) => {
+app.get('/usuario/:senha', async(req, res) => {
 
     const { senha } = req.params
 
