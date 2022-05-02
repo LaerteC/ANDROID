@@ -141,19 +141,6 @@ app.patch('/tokenvoto/:idcliente/:tokens/:voto', async(req, res) => {
 
 
 
-// Pegar da tabela votar se o usuario votou 
-
-app.get('/votou/:idcliente', async(req, res) => {
-
-    const { idcliente } = req.params
-
-    try {
-        const voto = await pool.query('select * from votar where idcliente=($1)', [idcliente])
-        return res.status(200).send(voto.rows)
-    } catch (err) {
-        return res.status(400).send(err)
-    }
-})
 
 
 
