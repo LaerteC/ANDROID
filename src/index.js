@@ -118,11 +118,7 @@ app.get('/usuario/:senha', async(req, res) => {
         const retornaUsurio = await pool.query('select * from usuario where senha = ($1)', [senha])
         if (!retornaUsurio.rows[0]) return res.status(400).send('Não tem esse usuário')
 
-        const token = jwt.sign({ userId: 1, }, SECRET, { expiresIn: 15 })
-
-        return res.status(200).send(retornaUsurio.rows).statusMessage(token + "Envianooo")
-
-
+        return res.status(200).send(retornaUsurio.rows)
 
     } catch (err) {
 
